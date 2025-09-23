@@ -11,5 +11,5 @@ public class PaymentRequestDto
     public string PaymentMethod { get; set; }
     
     [Required]
-    public string ProviderName { get; set; }
+    public string Provider { get; set; }
 }

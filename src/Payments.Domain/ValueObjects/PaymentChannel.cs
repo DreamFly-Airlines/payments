@@ -4,4 +4,4 @@ namespace Payments.Domain.ValueObjects;
 
 public readonly record struct PaymentChannel(
     PaymentMethod PaymentMethod,
-    ProviderName ProviderName);
+    Provider Provider);

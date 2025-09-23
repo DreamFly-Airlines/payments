@@ -1,6 +1,6 @@
 ﻿namespace Payments.Domain.Enums;
 
-public enum ProviderName
+public enum Provider
 {
     Visa,
     Mastercard,

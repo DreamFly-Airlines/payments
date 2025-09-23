@@ -7,4 +7,4 @@ public record MakePaymentCommand(
     string UserId, 
     string PaymentId, 
     PaymentMethod PaymentMethod, 
-    ProviderName Provider) : ICommand;
+    Provider Provider) : ICommand;

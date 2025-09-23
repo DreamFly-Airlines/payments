@@ -23,9 +23,9 @@ public class PaymentsController(ICommandSender commandSender) : Controller
             return BadRequest(ModelState);
         }
         
-        if (!Enum.TryParse<ProviderName>(paymentRequestDto.ProviderName, true, out var providerName))
+        if (!Enum.TryParse<Provider>(paymentRequestDto.Provider, true, out var providerName))
         {
-            ModelState.AddModelError("Provider name", GetAllowedEnumValuesMessage<ProviderName>());
+            ModelState.AddModelError("Provider name", GetAllowedEnumValuesMessage<Provider>());
             return BadRequest(ModelState);
         }
         
