@@ -1,6 +1,6 @@
 ﻿namespace Payments.Application.Abstractions;
 
-public interface ICommandHandler<TCommand> where TCommand : ICommand
+public interface ICommandHandler<in TCommand> where TCommand : ICommand
 {
-    public Task HandleAsync(CancellationToken cancellationToken = default);
+    public Task HandleAsync(TCommand command, CancellationToken cancellationToken = default);
 }
