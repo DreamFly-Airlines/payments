@@ -1,1 +1,3 @@
-# payments
+# Payments
+
+The payments logic for DreamFly Airlines.

@@ -48,7 +48,8 @@ CodeCoverage/
 [Tt]est[Rr]esult*/
 [Bb]uild[Ll]og.*
 
-# NUnit
-*.VisualState.xml
-TestResult.xml
-nunit-*.xml
+# Rider Ide
+.idea/
+
+# JetBrains Rider / ReSharper user-specific settings
+*.sln.DotSettings.user
