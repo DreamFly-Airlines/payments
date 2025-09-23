@@ -6,36 +6,35 @@ using Payments.Api.Helpers;
 using Payments.Application.Abstractions;
 using Payments.Application.Commands;
 using Payments.Domain.Enums;
+using Payments.Domain.ValueObjects;
 
 namespace Payments.Api.Controllers;
 
-[Route("api/[controller]")]
-public class PaymentsController(ICommandSender commandSender) : Controller
+[Route("/api/[controller]")]
+public class BillingInformationController(ICommandSender commandSender) : Controller
 {
     [HttpPost]
     [Authorize]
-    public async Task<IActionResult> MakePayment([FromBody] PaymentRequestDto paymentRequestDto)
+    public async Task<IActionResult> AddBillingInfo([FromBody] BillingInfoDto billingInfoDto)
     {
-        if (!Enum.TryParse<PaymentMethod>(paymentRequestDto.PaymentMethod, true, out var paymentMethod))
+        var userId = User.FindFirstValue(ClaimTypes.NameIdentifier)!;
+        if (!Enum.TryParse<PaymentMethod>(billingInfoDto.PaymentMethod, true, out var paymentMethod))
         {
             ModelState.AddModelError(
                 "Payment method", EnumFromStringValidationHelper.GetAllowedEnumValuesMessage<PaymentMethod>());
             return BadRequest(ModelState);
         }
         
-        if (!Enum.TryParse<Provider>(paymentRequestDto.Provider, true, out var providerName))
+        if (!Enum.TryParse<Provider>(billingInfoDto.Provider, true, out var providerName))
         {
             ModelState.AddModelError(
                 "Provider name", EnumFromStringValidationHelper.GetAllowedEnumValuesMessage<Provider>());
             return BadRequest(ModelState);
         }
-        
-        var userId = User.FindFirstValue(ClaimTypes.NameIdentifier)!;
-        var command = new MakePaymentCommand(
-            userId,
-            paymentRequestDto.PaymentId,
-            paymentMethod, 
-            providerName);
+
+        var channel = new PaymentChannel(paymentMethod, providerName);
+        var command = new AddBillingInfoCommand(
+            userId, channel, billingInfoDto.ProviderPaymentToken, billingInfoDto.LastFour);
         await commandSender.SendAsync(command);
         return Ok();
     }
