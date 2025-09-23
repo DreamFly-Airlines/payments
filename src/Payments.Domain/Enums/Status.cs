@@ -1,6 +1,6 @@
 ﻿namespace Payments.Domain.Enums;
 
-public enum PaymentStatus
+public enum Status
 {
     Confirmed,
     Pending,

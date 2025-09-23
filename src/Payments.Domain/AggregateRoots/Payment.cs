@@ -2,31 +2,36 @@
 using Payments.Domain.Enums;
 using Payments.Domain.Events;
 using Payments.Domain.Exceptions;
+using Payments.Domain.ValueObjects;
 
 namespace Payments.Domain.AggregateRoots;
 
 public class Payment : AggregateRoot<IDomainEvent>
 {
+    public string UserId { get; }
     public string PaymentId { get; }
-    public PaymentStatus Status { get; private set; }
+    public Status Status { get; private set; }
+    public PaymentChannel Channel { get; }
 
-    public Payment(string paymentId)
+    public Payment(string userId, string paymentId, PaymentChannel paymentChannel)
     {
+        UserId = userId;
         PaymentId = paymentId;
-        Status = PaymentStatus.Pending;
+        Status = Status.Pending;
+        Channel = paymentChannel;
         AddDomainEvent(new PaymentCreated(PaymentId));
     }
     
-    public void MarkAsConfirmed() => MarkAsConfirmedOrCancelAndPublish(PaymentStatus.Confirmed);
+    public void MarkAsConfirmed() => MarkAsConfirmedOrCancelAndPublish(Status.Confirmed);
 
-    public void Cancel() => MarkAsConfirmedOrCancelAndPublish(PaymentStatus.Cancelled);
+    public void Cancel() => MarkAsConfirmedOrCancelAndPublish(Status.Cancelled);
 
-    private void MarkAsConfirmedOrCancelAndPublish(PaymentStatus status)
+    private void MarkAsConfirmedOrCancelAndPublish(Status status)
     {
-        if (Status is PaymentStatus.Pending)
+        if (Status is Status.Pending)
         {
             Status = status;
-            AddDomainEvent(Status is PaymentStatus.Confirmed
+            AddDomainEvent(Status is Status.Confirmed
                 ? new PaymentConfirmed(PaymentId)
                 : new PaymentCancelled(PaymentId));
         }
@@ -34,6 +39,6 @@ public class Payment : AggregateRoot<IDomainEvent>
             throw new InvalidDomainOperationException(
                 $"Cannot set {nameof(Status)} of {nameof(Payment)} " +
                 $"with ID \"{PaymentId}\" to {status} " +
-                $"because {nameof(Status)} is not {nameof(PaymentStatus.Pending)}, it is {Status}.");
+                $"because {nameof(Status)} is not {nameof(Status.Pending)}, it is {Status}.");
     }
 }
