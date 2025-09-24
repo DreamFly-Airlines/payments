@@ -1,3 +1,6 @@
+using Payments.Api.Extensions;
+using Payments.Application.Commands;
+using Payments.Application.EventHandlers;
 using Payments.Infrastructure.Persistence;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -5,6 +8,8 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddOpenApi();
 builder.Services.AddControllers();
 builder.Services.AddNpgsql<PaymentsDbContext>(builder.Configuration.GetConnectionString("PaymentsDb"));
+builder.Services.AddCommandHandlers(typeof(MakePaymentCommand).Assembly);
+builder.Services.AddDomainEventHandlers(typeof(PaymentCreatedEventHandler).Assembly);
 
 var app = builder.Build();
 

@@ -11,6 +11,12 @@ public static class ServiceCollectionExtensions
         services.FindImplementationsAndRegister(handlerInterfaceType, assembly);
     }
 
+    public static void AddDomainEventHandlers(this IServiceCollection services, Assembly assembly)
+    {
+        var handlerInterfaceType = typeof(IDomainEventHandler<>);
+        services.FindImplementationsAndRegister(handlerInterfaceType, assembly);
+    }
+
     private static void FindImplementationsAndRegister(this IServiceCollection services, Type interfaceType, Assembly assembly)
     {
         var types = assembly
