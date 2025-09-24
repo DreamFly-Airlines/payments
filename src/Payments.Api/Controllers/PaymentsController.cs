@@ -35,7 +35,8 @@ public class PaymentsController(ICommandSender commandSender) : Controller
             userId,
             paymentRequestDto.PaymentId,
             paymentMethod, 
-            providerName);
+            providerName,
+            paymentRequestDto.Amount);
         await commandSender.SendAsync(command);
         return Ok();
     }

@@ -12,13 +12,15 @@ public class Payment : AggregateRoot<IDomainEvent>
     public string PaymentId { get; }
     public Status Status { get; private set; }
     public PaymentChannel Channel { get; }
+    public decimal Amount { get; }
 
-    public Payment(string userId, string paymentId, PaymentChannel paymentChannel)
+    public Payment(string userId, string paymentId, PaymentChannel paymentChannel,  decimal amount)
     {
         UserId = userId;
         PaymentId = paymentId;
         Status = Status.Pending;
         Channel = paymentChannel;
+        Amount = amount;
         AddDomainEvent(new PaymentCreated(PaymentId));
     }
     
