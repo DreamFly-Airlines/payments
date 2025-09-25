@@ -14,7 +14,7 @@ namespace Payments.Api.Controllers;
 public class BillingInformationController(ICommandSender commandSender) : Controller
 {
     [HttpPost]
-    [Authorize]
+    // [Authorize]
     public async Task<IActionResult> AddBillingInfo([FromBody] BillingInfoDto billingInfoDto)
     {
         var userId = User.FindFirstValue(ClaimTypes.NameIdentifier)!;

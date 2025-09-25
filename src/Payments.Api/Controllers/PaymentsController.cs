@@ -13,7 +13,7 @@ namespace Payments.Api.Controllers;
 public class PaymentsController(ICommandSender commandSender) : Controller
 {
     [HttpPost]
-    [Authorize]
+    // [Authorize]
     public async Task<IActionResult> MakePayment([FromBody] PaymentRequestDto paymentRequestDto)
     {
         if (!Enum.TryParse<PaymentMethod>(paymentRequestDto.PaymentMethod, true, out var paymentMethod))
