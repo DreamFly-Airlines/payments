@@ -1,10 +1,11 @@
-﻿using Payments.Application.Abstractions;
+﻿using Microsoft.Extensions.DependencyInjection;
+using Payments.Application.Abstractions;
 using Payments.Domain.AggregateRoots;
 using Payments.Domain.Repositories;
 
 namespace Payments.Infrastructure.Repositories;
 
-public class InMemoryPaymentRepository(IEventPublisher eventPublisher) : IPaymentRepository
+public class InMemoryPaymentRepository(IServiceScopeFactory scopeFactory) : IPaymentRepository
 {
     private static readonly Dictionary<string, Payment> Payments = new();
     public Task<Payment?> GetByIdAsync(string id, CancellationToken cancellationToken = default)
@@ -29,6 +30,8 @@ public class InMemoryPaymentRepository(IEventPublisher eventPublisher) : IPaymen
 
     public async Task SaveChangesAsync(Payment payment, CancellationToken cancellationToken = default)
     {
+        using var scope = scopeFactory.CreateScope();
+        var eventPublisher = scope.ServiceProvider.GetRequiredService<IEventPublisher>();
         foreach (var @event in payment.DomainEvents)
             await eventPublisher.PublishAsync(@event, cancellationToken);
         payment.ClearDomainEvents();

@@ -1,7 +1,9 @@
 using Payments.Api.Extensions;
+using Payments.Application.Abstractions;
 using Payments.Application.Commands;
 using Payments.Application.EventHandlers;
 using Payments.Domain.Repositories;
+using Payments.Infrastructure.Events;
 using Payments.Infrastructure.Persistence;
 using Payments.Infrastructure.Repositories;
 
@@ -13,7 +15,9 @@ builder.Services.AddNpgsql<PaymentsDbContext>(builder.Configuration.GetConnectio
 builder.Services.AddCommandHandlers(typeof(MakePaymentCommand).Assembly);
 builder.Services.AddDomainEventHandlers(typeof(PaymentCreatedEventHandler).Assembly);
 builder.Services.AddKafkaProducers(builder.Configuration);
+builder.Services.AddScoped<IEventPublisher, ServiceProviderEventPublisher>();
 builder.Services.AddSingleton<IPaymentRepository, InMemoryPaymentRepository>();
+builder.Services.AddSingleton<IBillingInfoRepository, InMemoryBillingInfoRepository>();
 
 var app = builder.Build();
 
