@@ -5,7 +5,7 @@ using Payments.Domain.Events;
 namespace Payments.Application.EventHandlers;
 
 public class PaymentConfirmedEventHandler(
-    IDomainEventProducer producer) : IDomainEventHandler<PaymentConfirmed>
+    IEventProducer producer) : IDomainEventHandler<PaymentConfirmed>
 {
     public async Task HandleAsync(PaymentConfirmed domainEvent, CancellationToken cancellationToken = default)
     {
