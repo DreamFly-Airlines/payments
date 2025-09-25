@@ -14,6 +14,7 @@ public class MakePaymentCommandHandler(
     {
         var paymentChannel = new PaymentChannel(command.PaymentMethod, command.Provider);
         var payment = new Payment(command.UserId, command.PaymentId, paymentChannel, command.Amount);
+        await paymentRepository.AddAsync(payment.PaymentId, payment, cancellationToken);
         await paymentRepository.SaveChangesAsync(payment, cancellationToken);
     }
 }

@@ -7,7 +7,7 @@ public interface IPaymentRepository
 {
     public Task<Payment?> GetByIdAsync(string id, CancellationToken cancellationToken = default);
     
-    public Task AddAsync(Payment payment, CancellationToken cancellationToken = default);
+    public Task AddAsync(string id, Payment payment, CancellationToken cancellationToken = default);
         
     public Task RemoveAsync(Payment payment, CancellationToken cancellationToken = default);
         

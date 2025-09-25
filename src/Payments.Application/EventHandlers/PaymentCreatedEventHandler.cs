@@ -7,7 +7,7 @@ using Payments.Domain.Repositories;
 namespace Payments.Application.EventHandlers;
 
 public class PaymentCreatedEventHandler(
-    IPaymentRepository paymentRepository) : IDomainEventHandler<PaymentCreated>
+    IPaymentRepository paymentRepository) : IEventHandler<PaymentCreated>
 {
     public async Task HandleAsync(PaymentCreated domainEvent, CancellationToken cancellationToken = default)
     {

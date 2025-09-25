@@ -2,7 +2,7 @@
 
 namespace Payments.Application.Abstractions;
 
-public interface IDomainEventHandler<in TEvent> where TEvent : IDomainEvent
+public interface IEventHandler<in TEvent>
 {
     public Task HandleAsync(TEvent domainEvent, CancellationToken cancellationToken = default);
 }

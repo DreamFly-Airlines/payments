@@ -16,14 +16,14 @@ public static class ServiceCollectionExtensions
 
     public static void AddDomainEventHandlers(this IServiceCollection services, Assembly assembly)
     {
-        var handlerInterfaceType = typeof(IDomainEventHandler<>);
+        var handlerInterfaceType = typeof(IEventHandler<>);
         services.FindImplementationsAndRegister(handlerInterfaceType, assembly);
     }
 
-    public static void AddKafkaProducers(this IServiceCollection services, IConfigurationSection kafkaConfigSection)
+    public static void AddKafkaProducers(this IServiceCollection services, IConfiguration configuration)
     {
         var kafkaConfig = new ProducerConfig();
-        kafkaConfigSection.Bind(kafkaConfig);
+        configuration.GetSection("Kafka:PaymentsEvents:ProducerSettings").Bind(kafkaConfig);
         services.AddSingleton<IProducer<Ignore, string>>(
             _ => new ProducerBuilder<Ignore, string>(kafkaConfig).Build());
         services.AddSingleton<IEventProducer, KafkaEventProducer>();
