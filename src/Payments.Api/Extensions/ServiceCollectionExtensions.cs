@@ -1,5 +1,8 @@
 ﻿using System.Reflection;
+using Confluent.Kafka;
 using Payments.Application.Abstractions;
+using Payments.Application.Producers;
+using Payments.Infrastructure.Producers;
 
 namespace Payments.Api.Extensions;
 
@@ -15,6 +18,15 @@ public static class ServiceCollectionExtensions
     {
         var handlerInterfaceType = typeof(IDomainEventHandler<>);
         services.FindImplementationsAndRegister(handlerInterfaceType, assembly);
+    }
+
+    public static void AddKafkaProducers(this IServiceCollection services, IConfigurationSection kafkaConfigSection)
+    {
+        var kafkaConfig = new ProducerConfig();
+        kafkaConfigSection.Bind(kafkaConfig);
+        services.AddSingleton<IProducer<Ignore, string>>(
+            _ => new ProducerBuilder<Ignore, string>(kafkaConfig).Build());
+        services.AddSingleton<IEventProducer, KafkaEventProducer>();
     }
 
     private static void FindImplementationsAndRegister(this IServiceCollection services, Type interfaceType, Assembly assembly)

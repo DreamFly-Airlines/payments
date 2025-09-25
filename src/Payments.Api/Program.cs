@@ -10,6 +10,7 @@ builder.Services.AddControllers();
 builder.Services.AddNpgsql<PaymentsDbContext>(builder.Configuration.GetConnectionString("PaymentsDb"));
 builder.Services.AddCommandHandlers(typeof(MakePaymentCommand).Assembly);
 builder.Services.AddDomainEventHandlers(typeof(PaymentCreatedEventHandler).Assembly);
+builder.Services.AddKafkaProducers(builder.Configuration.GetSection("Kafka:ProducerSettings"));
 
 var app = builder.Build();
 
