@@ -1,14 +1,21 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
 using Payments.Application.Abstractions;
+using Payments.Domain.Abstractions;
 
 namespace Payments.Infrastructure.Events;
 
 public class ServiceProviderEventPublisher(IServiceProvider serviceProvider) : IEventPublisher
 {
-    public async Task PublishAsync<TEvent>(TEvent @event, CancellationToken cancellationToken = default)
+    public async Task PublishAsync<TEvent>(TEvent @event, CancellationToken cancellationToken = default) 
+        where TEvent : notnull
     {
-        var handlers = serviceProvider.GetServices<IEventHandler<TEvent>>();
+        var handlerType = typeof(IEventHandler<>).MakeGenericType(@event.GetType());
+        var handlers = serviceProvider.GetServices(handlerType);
         foreach (var handler in handlers)
-            await handler.HandleAsync(@event, cancellationToken);
+        {
+            var handleMethod = handlerType.GetMethod(nameof(IEventHandler<object>.HandleAsync))
+                               ?? throw new ArgumentNullException(nameof(IEventHandler<object>.HandleAsync));
+            await (Task)handleMethod.Invoke(handler, [@event, cancellationToken])!;
+        }
     }
 }
