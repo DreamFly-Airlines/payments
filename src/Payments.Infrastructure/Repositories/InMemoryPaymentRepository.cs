@@ -19,7 +19,6 @@ public class InMemoryPaymentRepository(IServiceScopeFactory scopeFactory) : IPay
         if (!Payments.TryAdd(id, payment))
             throw new Exception();
         await SaveChangesAsync(payment, cancellationToken);
-        payment.ClearDomainEvents();
     }
 
     public Task RemoveAsync(Payment payment, CancellationToken cancellationToken = default)
@@ -32,8 +31,9 @@ public class InMemoryPaymentRepository(IServiceScopeFactory scopeFactory) : IPay
     {
         using var scope = scopeFactory.CreateScope();
         var eventPublisher = scope.ServiceProvider.GetRequiredService<IEventPublisher>();
-        foreach (var @event in payment.DomainEvents)
-            await eventPublisher.PublishAsync(@event, cancellationToken);
+        var events = payment.DomainEvents.ToArray();
         payment.ClearDomainEvents();
+        foreach (var @event in events)
+            await eventPublisher.PublishAsync(@event, cancellationToken);
     }
 }

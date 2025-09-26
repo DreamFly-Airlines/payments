@@ -1,4 +1,5 @@
-﻿using Payments.Application.Abstractions;
+﻿using System.ComponentModel.Design;
+using Payments.Application.Abstractions;
 using Payments.Domain.AggregateRoots;
 using Payments.Domain.Repositories;
 using Payments.Domain.ValueObjects;
@@ -15,6 +16,5 @@ public class MakePaymentCommandHandler(
         var paymentChannel = new PaymentChannel(command.PaymentMethod, command.Provider);
         var payment = new Payment(command.UserId, command.PaymentId, paymentChannel, command.Amount);
         await paymentRepository.AddAsync(payment.PaymentId, payment, cancellationToken);
-        await paymentRepository.SaveChangesAsync(payment, cancellationToken);
     }
 }
