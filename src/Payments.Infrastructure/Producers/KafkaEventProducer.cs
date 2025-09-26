@@ -9,7 +9,7 @@ namespace Payments.Infrastructure.Producers;
 
 public class KafkaEventProducer(
     ILogger<KafkaEventProducer> logger,
-    IProducer<Ignore, string> producer) : IEventProducer
+    IProducer<Null, string> producer) : IEventProducer
 {
     private const string PaymentsEventsTopicName = "payments-events";
     private const string EventTypeHeaderName = "event-type";
@@ -21,8 +21,9 @@ public class KafkaEventProducer(
         try
         {
             var messageJson = JsonSerializer.Serialize(@event);
-            var message = new Message<Ignore, string>
+            var message = new Message<Null, string>
             {
+                Headers = [],
                 Value = messageJson
             };
             var eventType = @event switch
@@ -38,7 +39,7 @@ public class KafkaEventProducer(
             message.Headers.Add(EventTypeHeaderName, Encoding.UTF8.GetBytes(eventType));
             await producer.ProduceAsync(PaymentsEventsTopicName, message, cancellationToken);
         }
-        catch (ProduceException<Ignore, string> e)
+        catch (ProduceException<Null, string> e)
         {
             logger.LogCritical("{ErrorMessage}", e.Message);
         }

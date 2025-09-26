@@ -24,8 +24,10 @@ public static class ServiceCollectionExtensions
     {
         var kafkaConfig = new ProducerConfig();
         configuration.GetSection("Kafka:PaymentsEvents:ProducerSettings").Bind(kafkaConfig);
-        services.AddSingleton<IProducer<Ignore, string>>(
-            _ => new ProducerBuilder<Ignore, string>(kafkaConfig).Build());
+        services.AddSingleton<IProducer<Null, string>>(
+            _ => new ProducerBuilder<Null, string>(kafkaConfig)
+                .SetValueSerializer(Serializers.Utf8)
+                .Build());
         services.AddSingleton<IEventProducer, KafkaEventProducer>();
     }
 
@@ -42,7 +44,7 @@ public static class ServiceCollectionExtensions
             });
 
         foreach (var type in types)
-        foreach (var @interface in type.Interfaces)
-            services.AddScoped(@interface, type.Implementation);
+            foreach (var @interface in type.Interfaces)
+                services.AddScoped(@interface, type.Implementation);
     }
 }
