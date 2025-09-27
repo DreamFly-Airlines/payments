@@ -1,5 +1,7 @@
 ﻿using Payments.Application.Abstractions;
+using Payments.Application.Helpers;
 using Payments.Domain.Entities;
+using Payments.Domain.Enums;
 using Payments.Domain.Repositories;
 using Payments.Domain.ValueObjects;
 
@@ -11,8 +13,11 @@ public class AddBillingInfoCommandHandler(
     public async Task HandleAsync(AddBillingInfoCommand command, CancellationToken cancellationToken = default)
     {
         var lastFour = LastFour.FromString(command.LastFour);
+        var paymentMethod = DataParser.TryParseEnumOrThrow<PaymentMethod>(command.PaymentMethod, "payment method");
+        var provider = DataParser.TryParseEnumOrThrow<Provider>(command.Provider, "provider");
+        var channel = new Channel(paymentMethod, provider);
         var billingInfo = new BillingInfo(
-            command.UserId, command.Channel, command.ProviderPaymentToken, lastFour);
+            command.UserId, channel, command.ProviderPaymentToken, lastFour);
         await  billingInfoRepository.AddAsync(billingInfo, cancellationToken);
     }
 }

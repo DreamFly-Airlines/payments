@@ -18,23 +18,12 @@ public class BillingInformationController(ICommandSender commandSender) : Contro
     public async Task<IActionResult> AddBillingInfo([FromBody] BillingInfoDto billingInfoDto)
     {
         var userId = User.FindFirstValue(ClaimTypes.NameIdentifier)!;
-        if (!Enum.TryParse<PaymentMethod>(billingInfoDto.PaymentMethod, true, out var paymentMethod))
-        {
-            ModelState.AddModelError(
-                "Payment method", EnumFromStringValidationHelper.GetAllowedEnumValuesMessage<PaymentMethod>());
-            return BadRequest(ModelState);
-        }
-        
-        if (!Enum.TryParse<Provider>(billingInfoDto.Provider, true, out var providerName))
-        {
-            ModelState.AddModelError(
-                "Provider name", EnumFromStringValidationHelper.GetAllowedEnumValuesMessage<Provider>());
-            return BadRequest(ModelState);
-        }
-
-        var channel = new Channel(paymentMethod, providerName);
         var command = new AddBillingInfoCommand(
-            userId, channel, billingInfoDto.ProviderPaymentToken, billingInfoDto.LastFour);
+            userId, 
+            billingInfoDto.PaymentMethod, 
+            billingInfoDto.Provider, 
+            billingInfoDto.ProviderPaymentToken, 
+            billingInfoDto.LastFour);
         await commandSender.SendAsync(command);
         return Ok();
     }

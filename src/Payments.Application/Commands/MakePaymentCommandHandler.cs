@@ -1,6 +1,9 @@
 ﻿using System.ComponentModel.Design;
 using Payments.Application.Abstractions;
+using Payments.Application.Exceptions;
+using Payments.Application.Helpers;
 using Payments.Domain.AggregateRoots;
+using Payments.Domain.Enums;
 using Payments.Domain.Repositories;
 using Payments.Domain.ValueObjects;
 
@@ -14,8 +17,10 @@ public class MakePaymentCommandHandler(
         CancellationToken cancellationToken = default)
     {
         var paymentId = Guid.NewGuid().ToString();
-        var paymentChannel = new Channel(command.PaymentMethod, command.Provider);
-        var payment = new Payment(command.UserId, paymentId, command.BookRef, paymentChannel, command.Amount);
+        var paymentMethod = DataParser.TryParseEnumOrThrow<PaymentMethod>(command.PaymentMethod, "payment method");
+        var provider = DataParser.TryParseEnumOrThrow<Provider>(command.Provider, "provider");
+        var channel = new Channel(paymentMethod, provider);
+        var payment = new Payment(command.UserId, paymentId, command.BookRef, channel, command.Amount);
         await paymentRepository.AddAsync(payment.Id, payment, cancellationToken);
     }
 }

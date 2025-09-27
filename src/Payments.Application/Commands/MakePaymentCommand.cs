@@ -6,6 +6,6 @@ namespace Payments.Application.Commands;
 public record MakePaymentCommand(
     string UserId,
     string BookRef,
-    PaymentMethod PaymentMethod, 
-    Provider Provider,
+    string PaymentMethod, 
+    string Provider,
     decimal Amount) : ICommand;

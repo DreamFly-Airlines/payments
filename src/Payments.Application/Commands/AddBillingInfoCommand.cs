@@ -5,6 +5,7 @@ namespace Payments.Application.Commands;
 
 public record AddBillingInfoCommand(
     string UserId, 
-    Channel Channel, 
+    string PaymentMethod,
+    string Provider,
     string ProviderPaymentToken, 
     string LastFour) : ICommand;

@@ -2,6 +2,7 @@
 using Payments.Application.Exceptions;
 using Payments.Domain.AggregateRoots;
 using Payments.Domain.Events;
+using Payments.Domain.Exceptions;
 using Payments.Domain.Repositories;
 
 namespace Payments.Application.EventHandlers;
@@ -16,7 +17,14 @@ public class PaymentCreatedEventHandler(
             throw new NotFoundException(nameof(Payment), @event.PaymentId);
         // TODO: initiate a payment via the provider’s API
         await Task.Delay(500);
-        payment.MarkAsConfirmed();
-        await paymentRepository.SaveChangesAsync(payment, cancellationToken);
+        try
+        {
+            payment.MarkAsConfirmed();
+            await paymentRepository.SaveChangesAsync(payment, cancellationToken);
+        }
+        catch (InvalidDomainOperationException ex)
+        {
+            throw new ValidationException(ex.Message);
+        }
     }
 }

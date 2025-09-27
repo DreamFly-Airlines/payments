@@ -15,28 +15,14 @@ public class PaymentsController(ICommandSender commandSender) : Controller
     // [Authorize]
     public async Task<IActionResult> MakePayment([FromBody] PaymentRequestDto paymentRequestDto)
     {
-        if (!Enum.TryParse<PaymentMethod>(paymentRequestDto.PaymentMethod, true, out var paymentMethod))
-        {
-            ModelState.AddModelError(
-                "Payment method", EnumFromStringValidationHelper.GetAllowedEnumValuesMessage<PaymentMethod>());
-            return BadRequest(ModelState);
-        }
-        
-        if (!Enum.TryParse<Provider>(paymentRequestDto.Provider, true, out var providerName))
-        {
-            ModelState.AddModelError(
-                "Provider name", EnumFromStringValidationHelper.GetAllowedEnumValuesMessage<Provider>());
-            return BadRequest(ModelState);
-        }
-        
         var userId = User.FindFirstValue(ClaimTypes.NameIdentifier)!;
         var command = new MakePaymentCommand(
             userId,
             paymentRequestDto.BookRef,
-            paymentMethod, 
-            providerName,
+            paymentRequestDto.PaymentMethod, 
+            paymentRequestDto.Provider,
             paymentRequestDto.Amount);
         await commandSender.SendAsync(command);
-        return Ok();
+        return Created();
     }
 }

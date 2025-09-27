@@ -1,3 +1,4 @@
+using Payments.Api.ExceptionHandling;
 using Payments.Api.Extensions;
 using Payments.Application.Abstractions;
 using Payments.Application.Commands;
@@ -11,10 +12,13 @@ using Payments.Infrastructure.Repositories;
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddControllers();
+builder.Services.AddExceptionHandler<GlobalExceptionHandler>();
+builder.Services.AddProblemDetails();
 builder.Services.AddNpgsql<PaymentsDbContext>(builder.Configuration.GetConnectionString("PaymentsDb"));
 builder.Services.AddCommandHandlers(typeof(MakePaymentCommand).Assembly);
 builder.Services.AddDomainEventHandlers(typeof(PaymentCreatedEventHandler).Assembly);
 builder.Services.AddKafkaProducers(builder.Configuration);
+
 builder.Services.AddScoped<IEventPublisher, ServiceProviderEventPublisher>();
 builder.Services.AddScoped<ICommandSender, ServiceProviderCommandSender>();
 builder.Services.AddSingleton<IPaymentRepository, InMemoryPaymentRepository>();
@@ -29,7 +33,10 @@ if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
     app.UseSwaggerUI();
+    app.UseDeveloperExceptionPage();
 }
+
+app.UseExceptionHandler();
 
 app.MapControllers();
 app.UseHttpsRedirection();
