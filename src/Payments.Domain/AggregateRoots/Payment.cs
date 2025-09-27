@@ -10,14 +10,16 @@ public class Payment : AggregateRoot<IDomainEvent>
 {
     public string UserId { get; }
     public string PaymentId { get; }
+    public string BookRef { get; }
     public Status Status { get; private set; }
     public PaymentChannel Channel { get; }
     public decimal Amount { get; }
 
-    public Payment(string userId, string paymentId, PaymentChannel paymentChannel,  decimal amount)
+    public Payment(string userId, string paymentId, string bookRef, PaymentChannel paymentChannel,  decimal amount)
     {
         UserId = userId;
         PaymentId = paymentId;
+        BookRef = bookRef;
         Status = Status.Pending;
         Channel = paymentChannel;
         Amount = amount;
@@ -34,8 +36,8 @@ public class Payment : AggregateRoot<IDomainEvent>
         {
             Status = status;
             AddDomainEvent(Status is Status.Confirmed
-                ? new PaymentConfirmed(PaymentId)
-                : new PaymentCancelled(PaymentId));
+                ? new PaymentConfirmed(PaymentId, BookRef)
+                : new PaymentCancelled(PaymentId, BookRef));
         }
         else
             throw new InvalidDomainOperationException(

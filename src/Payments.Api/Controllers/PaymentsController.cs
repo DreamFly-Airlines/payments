@@ -1,5 +1,4 @@
 ﻿using System.Security.Claims;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Payments.Api.Dto;
 using Payments.Api.Helpers;
@@ -33,7 +32,7 @@ public class PaymentsController(ICommandSender commandSender) : Controller
         var userId = User.FindFirstValue(ClaimTypes.NameIdentifier)!;
         var command = new MakePaymentCommand(
             userId,
-            paymentRequestDto.PaymentId,
+            paymentRequestDto.BookRef,
             paymentMethod, 
             providerName,
             paymentRequestDto.Amount);

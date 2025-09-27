@@ -9,11 +9,11 @@ namespace Payments.Application.EventHandlers;
 public class PaymentCreatedEventHandler(
     IPaymentRepository paymentRepository) : IEventHandler<PaymentCreated>
 {
-    public async Task HandleAsync(PaymentCreated domainEvent, CancellationToken cancellationToken = default)
+    public async Task HandleAsync(PaymentCreated @event, CancellationToken cancellationToken = default)
     {
-        var payment = await paymentRepository.GetByIdAsync(domainEvent.PaymentId, cancellationToken);
+        var payment = await paymentRepository.GetByIdAsync(@event.PaymentId, cancellationToken);
         if (payment == null)
-            throw new NotFoundException(nameof(Payment), domainEvent.PaymentId);
+            throw new NotFoundException(nameof(Payment), @event.PaymentId);
         // TODO: initiate a payment via the provider’s API
         await Task.Delay(500);
         payment.MarkAsConfirmed();

@@ -4,7 +4,7 @@ namespace Payments.Api.Dto;
 
 public class PaymentRequestDto
 {
-    [Required] public string PaymentId { get; set; } = null!;
+    [Required] public string BookRef { get; set; } = null!;
 
     [Required] public string PaymentMethod { get; set; } = null!;
 

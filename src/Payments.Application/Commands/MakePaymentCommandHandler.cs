@@ -13,8 +13,9 @@ public class MakePaymentCommandHandler(
         MakePaymentCommand command, 
         CancellationToken cancellationToken = default)
     {
+        var paymentId = Guid.NewGuid().ToString();
         var paymentChannel = new PaymentChannel(command.PaymentMethod, command.Provider);
-        var payment = new Payment(command.UserId, command.PaymentId, paymentChannel, command.Amount);
+        var payment = new Payment(command.UserId, paymentId, command.BookRef, paymentChannel, command.Amount);
         await paymentRepository.AddAsync(payment.PaymentId, payment, cancellationToken);
     }
 }

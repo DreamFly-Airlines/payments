@@ -4,8 +4,8 @@ using Payments.Domain.Enums;
 namespace Payments.Application.Commands;
 
 public record MakePaymentCommand(
-    string UserId, 
-    string PaymentId, 
+    string UserId,
+    string BookRef,
     PaymentMethod PaymentMethod, 
     Provider Provider,
     decimal Amount) : ICommand;
