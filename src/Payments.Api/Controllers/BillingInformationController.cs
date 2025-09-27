@@ -32,7 +32,7 @@ public class BillingInformationController(ICommandSender commandSender) : Contro
             return BadRequest(ModelState);
         }
 
-        var channel = new PaymentChannel(paymentMethod, providerName);
+        var channel = new Channel(paymentMethod, providerName);
         var command = new AddBillingInfoCommand(
             userId, channel, billingInfoDto.ProviderPaymentToken, billingInfoDto.LastFour);
         await commandSender.SendAsync(command);
