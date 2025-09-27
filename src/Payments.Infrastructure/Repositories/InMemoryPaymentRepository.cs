@@ -23,7 +23,7 @@ public class InMemoryPaymentRepository(IServiceScopeFactory scopeFactory) : IPay
 
     public Task RemoveAsync(Payment payment, CancellationToken cancellationToken = default)
     {
-        Payments.Remove(payment.PaymentId);
+        Payments.Remove(payment.Id);
         return Task.CompletedTask;
     }
 

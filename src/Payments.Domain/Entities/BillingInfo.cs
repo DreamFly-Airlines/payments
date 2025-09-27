@@ -2,10 +2,18 @@
 
 namespace Payments.Domain.Entities;
 
-public class BillingInfo(string userId, PaymentChannel channel, string providerPaymentToken, string lastFour)
+public class BillingInfo
 {
-    public string UserId = userId;
-    public PaymentChannel Channel = channel;
-    public string ProviderPaymentToken = providerPaymentToken;
-    public string LastFour = lastFour;
+    public string UserId { get; }
+    public Channel Channel { get; }
+    public string ProviderPaymentToken { get; }
+    public LastFour LastFour { get; }
+
+    public BillingInfo(string userId, Channel channel, string providerPaymentToken, LastFour lastFour)
+    {
+        UserId = userId;
+        Channel = channel;
+        ProviderPaymentToken = providerPaymentToken;
+        LastFour = lastFour;
+    }
 }

@@ -8,7 +8,7 @@ public interface IBillingInfoRepository
 {
     public Task<BillingInfo?> GetAsync(
         string userId, 
-        PaymentChannel channel, 
+        Channel channel, 
         CancellationToken cancellationToken = default);
     
     public Task AddAsync(BillingInfo billingInfo, CancellationToken cancellationToken = default);

@@ -6,12 +6,12 @@ namespace Payments.Infrastructure.Repositories;
 
 public class InMemoryBillingInfoRepository : IBillingInfoRepository
 {
-    private static readonly Dictionary<(string UserId, PaymentChannel PaymentChannel), BillingInfo> 
+    private static readonly Dictionary<(string UserId, Channel PaymentChannel), BillingInfo> 
         BillingInfos = new();
     public Task<BillingInfo?> GetAsync(
-        string userId, PaymentChannel paymentChannel, CancellationToken cancellationToken = default)
+        string userId, Channel channel, CancellationToken cancellationToken = default)
     {
-        var billingInfo = BillingInfos.GetValueOrDefault((userId, paymentChannel));
+        var billingInfo = BillingInfos.GetValueOrDefault((userId, paymentChannel: channel));
         return Task.FromResult(billingInfo);
     }
 

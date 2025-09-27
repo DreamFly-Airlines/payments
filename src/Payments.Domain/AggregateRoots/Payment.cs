@@ -8,22 +8,22 @@ namespace Payments.Domain.AggregateRoots;
 
 public class Payment : AggregateRoot<IDomainEvent>
 {
+    public string Id { get; }
     public string UserId { get; }
-    public string PaymentId { get; }
     public string BookRef { get; }
     public Status Status { get; private set; }
-    public PaymentChannel Channel { get; }
+    public Channel Channel { get; }
     public decimal Amount { get; }
 
-    public Payment(string userId, string paymentId, string bookRef, PaymentChannel paymentChannel,  decimal amount)
+    public Payment(string userId, string id, string bookRef, Channel channel,  decimal amount)
     {
         UserId = userId;
-        PaymentId = paymentId;
+        Id = id;
         BookRef = bookRef;
         Status = Status.Pending;
-        Channel = paymentChannel;
+        Channel = channel;
         Amount = amount;
-        AddDomainEvent(new PaymentCreated(PaymentId));
+        AddDomainEvent(new PaymentCreated(Id));
     }
     
     public void MarkAsConfirmed() => MarkAsConfirmedOrCancelAndPublish(Status.Confirmed);
@@ -36,13 +36,13 @@ public class Payment : AggregateRoot<IDomainEvent>
         {
             Status = status;
             AddDomainEvent(Status is Status.Confirmed
-                ? new PaymentConfirmed(PaymentId, BookRef)
-                : new PaymentCancelled(PaymentId, BookRef));
+                ? new PaymentConfirmed(Id, BookRef)
+                : new PaymentCancelled(Id, BookRef));
         }
         else
             throw new InvalidDomainOperationException(
                 $"Cannot set {nameof(Status)} of {nameof(Payment)} " +
-                $"with ID \"{PaymentId}\" to {status} " +
+                $"with ID \"{Id}\" to {status} " +
                 $"because {nameof(Status)} is not {nameof(Status.Pending)}, it is {Status}.");
     }
 }

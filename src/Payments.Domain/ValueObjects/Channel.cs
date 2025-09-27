@@ -2,6 +2,6 @@
 
 namespace Payments.Domain.ValueObjects;
 
-public readonly record struct PaymentChannel(
+public readonly record struct Channel(
     PaymentMethod PaymentMethod,
     Provider Provider);
