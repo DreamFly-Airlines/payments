@@ -36,8 +36,8 @@ public class Payment : AggregateRoot<IDomainEvent>
         {
             Status = status;
             AddDomainEvent(Status is Status.Confirmed
-                ? new PaymentConfirmed(Id, BookRef)
-                : new PaymentCancelled(Id, BookRef));
+                ? new PaymentConfirmed(Id)
+                : new PaymentCancelled(Id));
         }
         else
             throw new InvalidDomainOperationException(

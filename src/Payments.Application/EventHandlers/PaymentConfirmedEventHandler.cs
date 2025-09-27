@@ -1,5 +1,6 @@
 ﻿using Payments.Application.Abstractions;
 using Payments.Application.Exceptions;
+using Payments.Application.IntegrationEvents;
 using Payments.Application.Producers;
 using Payments.Domain.AggregateRoots;
 using Payments.Domain.Events;
@@ -16,6 +17,7 @@ public class PaymentConfirmedEventHandler(
         var payment = await paymentRepository.GetByIdAsync(@event.PaymentId, cancellationToken);
         if (payment is null)
             throw new NotFoundException(nameof(Payment), @event.PaymentId);
-        await producer.ProduceAsync(@event, cancellationToken);
+        var paymentConfirmed = new PaymentConfirmedIntegrationEvent { BookRef = payment.BookRef };
+        await producer.ProduceAsync(paymentConfirmed, cancellationToken);
     }
 }

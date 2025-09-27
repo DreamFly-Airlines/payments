@@ -2,4 +2,4 @@
 
 namespace Payments.Domain.Events;
 
-public record PaymentConfirmed(string PaymentId, string BookRef) : IDomainEvent;
+public record PaymentConfirmed(string PaymentId) : IDomainEvent;

@@ -2,6 +2,8 @@
 using System.Text.Json;
 using Confluent.Kafka;
 using Microsoft.Extensions.Logging;
+using Payments.Application.Abstractions;
+using Payments.Application.IntegrationEvents;
 using Payments.Application.Producers;
 using Payments.Domain.Events;
 
@@ -16,7 +18,8 @@ public class KafkaEventProducer(
     private const string PaymentConfirmedEventName = "PaymentConfirmed";
     private const string PaymentCancelledEventName = "PaymentCancelled";
     
-    public async Task ProduceAsync<TEvent>(TEvent @event, CancellationToken cancellationToken = default) 
+    public async Task ProduceAsync<TEvent>(TEvent @event, CancellationToken cancellationToken = default)
+        where TEvent : IIntegrationEvent
     {
         try
         {
@@ -28,8 +31,8 @@ public class KafkaEventProducer(
             };
             var eventType = @event switch
             {
-                PaymentConfirmed => PaymentConfirmedEventName,
-                PaymentCancelled => PaymentCancelledEventName,
+                PaymentConfirmedIntegrationEvent => PaymentConfirmedEventName,
+                PaymentCancelledIntegrationEvent => PaymentCancelledEventName,
                 _ => throw new ArgumentException(
                     $"Unknown event type \"{@event?.GetType()}\". " +
                     $"Supported event types: {string.Join(", ", nameof(PaymentConfirmed), nameof(PaymentCancelled))}")
