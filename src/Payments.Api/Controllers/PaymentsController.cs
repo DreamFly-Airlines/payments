@@ -13,15 +13,15 @@ public class PaymentsController(ICommandSender commandSender) : Controller
 {
     [HttpPost]
     // [Authorize]
-    public async Task<IActionResult> MakePayment([FromBody] PaymentRequestDto paymentRequestDto)
+    public async Task<IActionResult> MakePayment([FromBody] MakePaymentRequest makePaymentRequest)
     {
         var userId = User.FindFirstValue(ClaimTypes.NameIdentifier)!;
         var command = new MakePaymentCommand(
             userId,
-            paymentRequestDto.BookRef,
-            paymentRequestDto.PaymentMethod, 
-            paymentRequestDto.Provider,
-            paymentRequestDto.Amount);
+            makePaymentRequest.BookRef,
+            makePaymentRequest.PaymentMethod, 
+            makePaymentRequest.Provider,
+            makePaymentRequest.Amount);
         await commandSender.SendAsync(command);
         return Created();
     }

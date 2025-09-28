@@ -15,15 +15,15 @@ public class BillingInformationController(ICommandSender commandSender) : Contro
 {
     [HttpPost]
     // [Authorize]
-    public async Task<IActionResult> AddBillingInfo([FromBody] BillingInfoDto billingInfoDto)
+    public async Task<IActionResult> AddBillingInfo([FromBody] AddBillingInfoRequest addBillingInfoRequest)
     {
         var userId = User.FindFirstValue(ClaimTypes.NameIdentifier)!;
         var command = new AddBillingInfoCommand(
             userId, 
-            billingInfoDto.PaymentMethod, 
-            billingInfoDto.Provider, 
-            billingInfoDto.ProviderPaymentToken, 
-            billingInfoDto.LastFour);
+            addBillingInfoRequest.PaymentMethod, 
+            addBillingInfoRequest.Provider, 
+            addBillingInfoRequest.ProviderPaymentToken, 
+            addBillingInfoRequest.LastFour);
         await commandSender.SendAsync(command);
         return Created();
     }

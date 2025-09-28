@@ -2,13 +2,13 @@
 
 namespace Payments.Api.Dto;
 
-public class PaymentRequestDto
+public class AddBillingInfoRequest
 {
-    [Required] public string BookRef { get; set; } = null!;
-
     [Required] public string PaymentMethod { get; set; } = null!;
 
     [Required] public string Provider { get; set; } = null!;
 
-    [Required] public decimal Amount { get; set; }
+    [Required] public string ProviderPaymentToken { get; set; } = null!;
+
+    [Required] public string LastFour { get; set; } = null!;
 }
