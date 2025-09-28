@@ -8,7 +8,7 @@ using Payments.Domain.Enums;
 
 namespace Payments.Api.Controllers;
 
-[Route("api/[controller]")]
+[Route("api/payments")]
 public class PaymentsController(ICommandSender commandSender) : Controller
 {
     [HttpPost]

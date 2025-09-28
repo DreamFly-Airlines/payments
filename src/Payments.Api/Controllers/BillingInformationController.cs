@@ -10,7 +10,7 @@ using Payments.Domain.ValueObjects;
 
 namespace Payments.Api.Controllers;
 
-[Route("/api/[controller]")]
+[Route("/api/billing-info")]
 public class BillingInformationController(ICommandSender commandSender) : Controller
 {
     [HttpPost]
@@ -25,6 +25,6 @@ public class BillingInformationController(ICommandSender commandSender) : Contro
             billingInfoDto.ProviderPaymentToken, 
             billingInfoDto.LastFour);
         await commandSender.SendAsync(command);
-        return Ok();
+        return Created();
     }
 }
