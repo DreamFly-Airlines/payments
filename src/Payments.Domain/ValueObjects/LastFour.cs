@@ -10,9 +10,8 @@ public readonly record struct LastFour
 
     public static LastFour FromString(string value)
     {
-        if (value.Length != 4)
-            throw new DomainModelCreationException(
-                $"Last four should consist only of 4 digits. Got {value.Length} instead.");
+        if (value.Length != 4) 
+            throw new InvalidDomainDataFormatException("Last four should consist only of 4 digits.");
         return new(value);
     }
     

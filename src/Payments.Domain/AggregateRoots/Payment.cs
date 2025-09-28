@@ -25,12 +25,36 @@ public class Payment : AggregateRoot<IDomainEvent>
         Amount = amount;
         AddDomainEvent(new PaymentCreated(Id));
     }
-    
-    public void MarkAsConfirmed() => MarkAsConfirmedOrCancelAndPublish(Status.Confirmed);
 
-    public void Cancel() => MarkAsConfirmedOrCancelAndPublish(Status.Cancelled);
+    public void MarkAsConfirmed()
+    {
+        if (TryChangeStatusFromPendingAndPublish(Status.Confirmed)) 
+            return;
+        
+        var reason = Status switch
+        {
+            Status.Cancelled => "it's cancelled",
+            Status.Confirmed => "it's already confirmed",
+            _ => throw new ArgumentException($"Unexpected status: {Status}")
+        };
+        throw new InvalidDomainOperationException($"Cannot confirm payment because {reason}.");
+    }
 
-    private void MarkAsConfirmedOrCancelAndPublish(Status status)
+    public void Cancel() 
+    {
+        if (TryChangeStatusFromPendingAndPublish(Status.Cancelled)) 
+            return;
+        
+        var reason = Status switch
+        {
+            Status.Cancelled => "it's already cancelled",
+            Status.Confirmed => "it's confirmed",
+            _ => throw new ArgumentException($"Unexpected status: {Status}")
+        };
+        throw new InvalidDomainOperationException($"Cannot confirm payment because {reason}.");
+    }
+
+    private bool TryChangeStatusFromPendingAndPublish(Status status)
     {
         if (Status is Status.Pending)
         {
@@ -38,11 +62,9 @@ public class Payment : AggregateRoot<IDomainEvent>
             AddDomainEvent(Status is Status.Confirmed
                 ? new PaymentConfirmed(Id)
                 : new PaymentCancelled(Id));
+            return true;
         }
-        else
-            throw new InvalidDomainOperationException(
-                $"Cannot set {nameof(Status)} of {nameof(Payment)} " +
-                $"with ID \"{Id}\" to {status} " +
-                $"because {nameof(Status)} is not {nameof(Status.Pending)}, it is {Status}.");
+
+        return false;
     }
 }
