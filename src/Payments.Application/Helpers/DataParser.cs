@@ -8,8 +8,13 @@ public static class DataParser
         where T : struct, Enum
     {
         if (!Enum.TryParse<T>(value, out var parsed))
-            throw new DataFormatException(
-                parameterName, value, $"Supported values: {string.Join(", ", Enum.GetNames<T>())}.");
+        {
+            var state = new EntityStateInfo(nameof(T), ("Value", value));
+            throw new ValidationException(
+                $"Unknown {parameterName}. " +
+                $"Supported values: {string.Join(", ", Enum.GetNames<T>())}", 
+                state);
+        }
         return parsed;
     }
 }

@@ -24,7 +24,10 @@ public class PaymentCreatedEventHandler(
         }
         catch (InvalidDomainOperationException ex)
         {
-            throw new ValidationException(ex.Message);
+            var state = new EntityStateInfo(nameof(Payment), 
+                (nameof(Payment.Id), payment.Id), 
+                (nameof(Payment.Status), payment.Status.ToString()));
+            throw new ValidationException(ex.Message, state);
         }
     }
 }
