@@ -1,4 +1,5 @@
-﻿using Payments.Application.Abstractions;
+﻿
+using Shared.Abstractions.IntegrationEvents;
 
 namespace Payments.Application.IntegrationEvents;
 

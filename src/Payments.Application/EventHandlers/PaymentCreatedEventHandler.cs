@@ -1,9 +1,9 @@
-﻿using Payments.Application.Abstractions;
-using Payments.Application.Exceptions;
+﻿using Payments.Application.Exceptions;
 using Payments.Domain.AggregateRoots;
 using Payments.Domain.Events;
 using Payments.Domain.Exceptions;
 using Payments.Domain.Repositories;
+using Shared.Abstractions.Events;
 
 namespace Payments.Application.EventHandlers;
 

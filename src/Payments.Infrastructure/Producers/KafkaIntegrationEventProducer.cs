@@ -2,16 +2,16 @@
 using System.Text.Json;
 using Confluent.Kafka;
 using Microsoft.Extensions.Logging;
-using Payments.Application.Abstractions;
 using Payments.Application.IntegrationEvents;
-using Payments.Application.Producers;
 using Payments.Domain.Events;
+using Shared.Abstractions.IntegrationEvents;
+using IIntegrationEventProducer = Payments.Application.Producers.IIntegrationEventProducer;
 
 namespace Payments.Infrastructure.Producers;
 
-public class KafkaEventProducer(
-    ILogger<KafkaEventProducer> logger,
-    IProducer<Null, string> producer) : IEventProducer
+public class KafkaIntegrationEventProducer(
+    ILogger<KafkaIntegrationEventProducer> logger,
+    IProducer<Null, string> producer) : IIntegrationEventProducer
 {
     private const string PaymentsEventsTopicName = "payments-events";
     private const string EventTypeHeaderName = "event-type";
@@ -34,7 +34,7 @@ public class KafkaEventProducer(
                 PaymentConfirmedIntegrationEvent => PaymentConfirmedEventName,
                 PaymentCancelledIntegrationEvent => PaymentCancelledEventName,
                 _ => throw new ArgumentException(
-                    $"Unknown event type \"{@event?.GetType()}\". " +
+                    $"Unknown event type \"{@event.GetType()}\". " +
                     $"Supported event types: {string.Join(", ", nameof(PaymentConfirmed), nameof(PaymentCancelled))}")
             };
             logger.LogInformation(

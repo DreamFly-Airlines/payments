@@ -1,5 +1,4 @@
-﻿using Payments.Application.Abstractions;
-using Payments.Domain.Enums;
+﻿using Shared.Abstractions.Commands;
 
 namespace Payments.Application.Commands;
 

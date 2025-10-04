@@ -1,16 +1,16 @@
-﻿using Payments.Application.Abstractions;
-using Payments.Application.Exceptions;
+﻿using Payments.Application.Exceptions;
 using Payments.Application.IntegrationEvents;
 using Payments.Application.Producers;
 using Payments.Domain.AggregateRoots;
 using Payments.Domain.Events;
 using Payments.Domain.Repositories;
+using Shared.Abstractions.Events;
 
 namespace Payments.Application.EventHandlers;
 
 public class PaymentConfirmedEventHandler(
     IPaymentRepository paymentRepository,
-    IEventProducer producer) : IEventHandler<PaymentConfirmed>
+    IIntegrationEventProducer producer) : IEventHandler<PaymentConfirmed>
 {
     public async Task HandleAsync(PaymentConfirmed @event, CancellationToken cancellationToken = default)
     {

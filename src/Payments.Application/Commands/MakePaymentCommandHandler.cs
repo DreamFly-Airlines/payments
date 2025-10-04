@@ -1,11 +1,9 @@
-﻿using System.ComponentModel.Design;
-using Payments.Application.Abstractions;
-using Payments.Application.Exceptions;
-using Payments.Application.Helpers;
+﻿using Payments.Application.Helpers;
 using Payments.Domain.AggregateRoots;
 using Payments.Domain.Enums;
 using Payments.Domain.Repositories;
 using Payments.Domain.ValueObjects;
+using Shared.Abstractions.Commands;
 
 namespace Payments.Application.Commands;
 

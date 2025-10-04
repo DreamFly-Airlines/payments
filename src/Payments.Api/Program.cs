@@ -1,13 +1,15 @@
 using Payments.Api.ExceptionHandling;
 using Payments.Api.Extensions;
-using Payments.Application.Abstractions;
 using Payments.Application.Commands;
 using Payments.Application.EventHandlers;
 using Payments.Domain.Repositories;
-using Payments.Infrastructure.Commands;
-using Payments.Infrastructure.Events;
 using Payments.Infrastructure.Persistence;
 using Payments.Infrastructure.Repositories;
+using Shared.Abstractions.Commands;
+using Shared.Abstractions.Events;
+using Shared.Extensions.ServiceCollection;
+using Shared.Infrastructure.Commands;
+using Shared.Infrastructure.Events;
 
 var builder = WebApplication.CreateBuilder(args);
 

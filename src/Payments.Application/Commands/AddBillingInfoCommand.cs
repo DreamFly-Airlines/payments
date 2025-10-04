@@ -1,5 +1,4 @@
-﻿using Payments.Application.Abstractions;
-using Payments.Domain.ValueObjects;
+﻿using ICommand = Shared.Abstractions.Commands.ICommand;
 
 namespace Payments.Application.Commands;
 

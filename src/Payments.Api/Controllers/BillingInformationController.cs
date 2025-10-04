@@ -1,12 +1,8 @@
 ﻿using System.Security.Claims;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Payments.Api.Dto;
-using Payments.Api.Helpers;
-using Payments.Application.Abstractions;
 using Payments.Application.Commands;
-using Payments.Domain.Enums;
-using Payments.Domain.ValueObjects;
+using Shared.Abstractions.Commands;
 
 namespace Payments.Api.Controllers;
 

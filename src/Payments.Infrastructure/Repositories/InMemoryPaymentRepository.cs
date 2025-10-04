@@ -1,7 +1,7 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
-using Payments.Application.Abstractions;
 using Payments.Domain.AggregateRoots;
 using Payments.Domain.Repositories;
+using Shared.Abstractions.Events;
 
 namespace Payments.Infrastructure.Repositories;
 
