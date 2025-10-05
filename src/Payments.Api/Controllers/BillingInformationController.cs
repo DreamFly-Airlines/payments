@@ -1,5 +1,7 @@
 ﻿using System.Security.Claims;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Payments.Api.Authorization;
 using Payments.Api.Dto;
 using Payments.Application.Commands;
 using Shared.Abstractions.Commands;
@@ -10,7 +12,7 @@ namespace Payments.Api.Controllers;
 public class BillingInformationController(ICommandSender commandSender) : Controller
 {
     [HttpPost]
-    // [Authorize]
+    [Authorize(Policy = Policies.HasNameIdentifier)]
     public async Task<IActionResult> AddBillingInfo([FromBody] AddBillingInfoRequest addBillingInfoRequest)
     {
         var userId = User.FindFirstValue(ClaimTypes.NameIdentifier)!;
