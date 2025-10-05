@@ -1,9 +1,8 @@
-﻿using System.Reflection;
+﻿using System.Text;
 using Confluent.Kafka;
+using Microsoft.IdentityModel.Tokens;
 using Payments.Application.Producers;
 using Payments.Infrastructure.Producers;
-using Shared.Abstractions.Commands;
-using Shared.Abstractions.Events;
 
 namespace Payments.Api.Extensions;
 
@@ -18,5 +17,25 @@ public static class ServiceCollectionExtensions
                 .SetValueSerializer(Serializers.Utf8)
                 .Build());
         services.AddSingleton<IIntegrationEventProducer, KafkaIntegrationEventProducer>();
+    }
+    
+    public static void AddJwtAuthentication(this IServiceCollection services, IConfiguration configuration)
+    {
+        const string jwtOptionsConfigurationKey = "JwtOptions:Key";
+        services
+            .AddAuthentication()
+            .AddJwtBearer(options =>
+            {
+                var key = configuration[jwtOptionsConfigurationKey] 
+                          ?? throw new ArgumentNullException(jwtOptionsConfigurationKey);
+                options.TokenValidationParameters = new TokenValidationParameters
+                {
+                    ValidateIssuer = false,
+                    ValidateAudience = false,
+                    ValidateLifetime = true,
+                    ValidateIssuerSigningKey = true,
+                    IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(key))
+                };
+            });
     }
 }

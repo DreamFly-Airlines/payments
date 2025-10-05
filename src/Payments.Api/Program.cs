@@ -1,3 +1,5 @@
+using System.Security.Claims;
+using Payments.Api.Authorization;
 using Payments.Api.ExceptionHandling;
 using Payments.Api.Extensions;
 using Payments.Application.Commands;
@@ -29,6 +31,12 @@ builder.Services.AddSingleton<IBillingInfoRepository, InMemoryBillingInfoReposit
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
+builder.Services.AddJwtAuthentication(builder.Configuration);
+builder.Services.AddAuthorization(options =>
+{
+    options.AddPolicy(Policies.HasNameIdentifier, policy => policy.RequireClaim(ClaimTypes.NameIdentifier));
+});
+
 var app = builder.Build();
 
 if (app.Environment.IsDevelopment())
@@ -40,7 +48,11 @@ if (app.Environment.IsDevelopment())
 
 app.UseExceptionHandler();
 
-app.MapControllers();
 app.UseHttpsRedirection();
+
+app.UseAuthentication();
+app.UseAuthorization();
+
+app.MapControllers();
 
 app.Run();

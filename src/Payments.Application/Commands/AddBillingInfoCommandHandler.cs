@@ -18,6 +18,6 @@ public class AddBillingInfoCommandHandler(
         var channel = new Channel(paymentMethod, provider);
         var billingInfo = new BillingInfo(
             command.UserId, channel, command.ProviderPaymentToken, lastFour);
-        await  billingInfoRepository.AddAsync(billingInfo, cancellationToken);
+        await billingInfoRepository.AddAsync(billingInfo, cancellationToken);
     }
 }
