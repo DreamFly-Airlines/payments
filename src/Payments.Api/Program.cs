@@ -1,4 +1,5 @@
 using System.Security.Claims;
+using Microsoft.OpenApi.Models;
 using Payments.Api.Authorization;
 using Payments.Api.ExceptionHandling;
 using Payments.Api.Extensions;
@@ -29,13 +30,10 @@ builder.Services.AddSingleton<IPaymentRepository, InMemoryPaymentRepository>();
 builder.Services.AddSingleton<IBillingInfoRepository, InMemoryBillingInfoRepository>();
 
 builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddSwaggerGen();
+builder.Services.AddSwaggerGenWithJwtAuthentication();
 
-builder.Services.AddJwtAuthentication(builder.Configuration);
-builder.Services.AddAuthorization(options =>
-{
-    options.AddPolicy(Policies.HasNameIdentifier, policy => policy.RequireClaim(ClaimTypes.NameIdentifier));
-});
+builder.Services.AddAuthenticationWithJwt(builder.Configuration);
+builder.Services.AddAuthorizationWithPolicies();
 
 var app = builder.Build();
 
