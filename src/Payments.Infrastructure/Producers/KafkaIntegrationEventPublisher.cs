@@ -5,20 +5,19 @@ using Microsoft.Extensions.Logging;
 using Payments.Application.IntegrationEvents;
 using Payments.Domain.Events;
 using Shared.Abstractions.IntegrationEvents;
-using IIntegrationEventProducer = Payments.Application.Producers.IIntegrationEventProducer;
 
 namespace Payments.Infrastructure.Producers;
 
-public class KafkaIntegrationEventProducer(
-    ILogger<KafkaIntegrationEventProducer> logger,
-    IProducer<Null, string> producer) : IIntegrationEventProducer
+public class KafkaIntegrationEventPublisher(
+    ILogger<KafkaIntegrationEventPublisher> logger,
+    IProducer<Null, string> producer) : IIntegrationEventPublisher
 {
     private const string PaymentsEventsTopicName = "payments-events";
     private const string EventTypeHeaderName = "event-type";
     private const string PaymentConfirmedEventName = "PaymentConfirmed";
     private const string PaymentCancelledEventName = "PaymentCancelled";
     
-    public async Task ProduceAsync<TEvent>(TEvent @event, CancellationToken cancellationToken = default)
+    public async Task PublishAsync<TEvent>(TEvent @event, CancellationToken cancellationToken = default)
         where TEvent : IIntegrationEvent
     {
         try

@@ -1,16 +1,16 @@
 ﻿using Payments.Application.Exceptions;
 using Payments.Application.IntegrationEvents;
-using Payments.Application.Producers;
 using Payments.Domain.AggregateRoots;
 using Payments.Domain.Events;
 using Payments.Domain.Repositories;
 using Shared.Abstractions.Events;
+using Shared.Abstractions.IntegrationEvents;
 
 namespace Payments.Application.EventHandlers;
 
 public class PaymentConfirmedEventHandler(
     IPaymentRepository paymentRepository,
-    IIntegrationEventProducer producer) : IEventHandler<PaymentConfirmed>
+    IIntegrationEventPublisher publisher) : IEventHandler<PaymentConfirmed>
 {
     public async Task HandleAsync(PaymentConfirmed @event, CancellationToken cancellationToken = default)
     {
@@ -18,6 +18,6 @@ public class PaymentConfirmedEventHandler(
         if (payment is null)
             throw new NotFoundException(nameof(Payment), @event.PaymentId);
         var paymentConfirmed = new PaymentConfirmedIntegrationEvent { BookRef = payment.BookRef };
-        await producer.ProduceAsync(paymentConfirmed, cancellationToken);
+        await publisher.PublishAsync(paymentConfirmed, cancellationToken);
     }
 }

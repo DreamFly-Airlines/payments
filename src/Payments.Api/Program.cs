@@ -1,15 +1,14 @@
-using System.Security.Claims;
-using Microsoft.OpenApi.Models;
-using Payments.Api.Authorization;
 using Payments.Api.ExceptionHandling;
 using Payments.Api.Extensions;
 using Payments.Application.Commands;
 using Payments.Application.EventHandlers;
 using Payments.Domain.Repositories;
 using Payments.Infrastructure.Persistence;
+using Payments.Infrastructure.Producers;
 using Payments.Infrastructure.Repositories;
 using Shared.Abstractions.Commands;
 using Shared.Abstractions.Events;
+using Shared.Abstractions.IntegrationEvents;
 using Shared.Extensions.ServiceCollection;
 using Shared.Infrastructure.Commands;
 using Shared.Infrastructure.Events;
@@ -26,6 +25,7 @@ builder.Services.AddKafkaProducers(builder.Configuration);
 
 builder.Services.AddScoped<IEventPublisher, ServiceProviderEventPublisher>();
 builder.Services.AddScoped<ICommandSender, ServiceProviderCommandSender>();
+builder.Services.AddSingleton<IIntegrationEventPublisher, KafkaIntegrationEventPublisher>();
 builder.Services.AddSingleton<IPaymentRepository, InMemoryPaymentRepository>();
 builder.Services.AddSingleton<IBillingInfoRepository, InMemoryBillingInfoRepository>();
 

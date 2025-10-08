@@ -4,8 +4,6 @@ using Confluent.Kafka;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using Payments.Api.Authorization;
-using Payments.Application.Producers;
-using Payments.Infrastructure.Producers;
 
 namespace Payments.Api.Extensions;
 
@@ -19,7 +17,6 @@ public static class ServiceCollectionExtensions
             _ => new ProducerBuilder<Null, string>(kafkaConfig)
                 .SetValueSerializer(Serializers.Utf8)
                 .Build());
-        services.AddSingleton<IIntegrationEventProducer, KafkaIntegrationEventProducer>();
     }
     
     public static void AddAuthenticationWithJwt(this IServiceCollection services, IConfiguration configuration)
