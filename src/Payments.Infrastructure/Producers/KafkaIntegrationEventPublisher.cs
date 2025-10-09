@@ -1,4 +1,5 @@
-﻿using System.Reflection;
+﻿using System.Collections.Concurrent;
+using System.Reflection;
 using System.Text;
 using System.Text.Json;
 using Confluent.Kafka;
@@ -12,6 +13,8 @@ public class KafkaIntegrationEventPublisher(
     ILogger<KafkaIntegrationEventPublisher> logger,
     IProducer<Null, string> producer) : IIntegrationEventPublisher
 {
+    private static readonly ConcurrentDictionary<Type, byte[]> EventNameCache = new();
+    
     public async Task PublishAsync<TEvent>(TEvent @event, CancellationToken cancellationToken = default)
         where TEvent : IIntegrationEvent
     {
@@ -42,14 +45,20 @@ public class KafkaIntegrationEventPublisher(
 
     private static byte[] GetEventNameOrThrow<TEvent>(TEvent @event) where TEvent : IIntegrationEvent
     {
+        var eventType = @event.GetType();
         const string eventNamePropName = nameof(IIntegrationEvent.EventName);
-        
-        var eventNameProp = @event.GetType().GetProperty(eventNamePropName,
-            BindingFlags.Public | BindingFlags.Static) 
-                            ?? throw new MissingMemberException($"Property \"{eventNamePropName}\" is missing");
-        var eventName = (string?)eventNameProp.GetValue(@event);
-        if (string.IsNullOrEmpty(eventName))
-            throw new MissingMemberException($"Value for property \"{eventNamePropName}\" is missing");
-        return Encoding.UTF8.GetBytes(eventName);
+        return EventNameCache.GetOrAdd(eventType, static type =>
+        {
+            var prop = type.GetProperty(eventNamePropName, BindingFlags.Public | BindingFlags.Static)
+                       ?? throw new MissingMemberException(
+                           $"Property \"{eventNamePropName}\" is missing on type {type.FullName}");
+
+            var value = (string?)prop.GetValue(null);
+            if (string.IsNullOrEmpty(value))
+                throw new MissingMemberException(
+                    $"Value for property \"{eventNamePropName}\" is missing on type {type.FullName}");
+
+            return Encoding.UTF8.GetBytes(value);
+        });
     }
 }
