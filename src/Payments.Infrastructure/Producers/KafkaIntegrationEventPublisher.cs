@@ -23,13 +23,12 @@ public class KafkaIntegrationEventPublisher(
                 Headers = [],
                 Value = messageJson
             };
-            var eventNameProp = @event.GetType().GetProperty(nameof(IIntegrationEvent.EventName),
-                BindingFlags.Public | BindingFlags.Static);
-            var eventName = (string)eventNameProp!.GetValue(@event)!;
-            logger.LogInformation(
-                "Message \"{MessageValue}\" with type \"{EventType}\" formed.", message.Value, eventName);
-            message.Headers.Add(KafkaHeaders.EventType, Encoding.UTF8.GetBytes(eventName));
+            var eventName = GetEventNameOrThrow(@event);
+            message.Headers.Add(KafkaHeaders.EventType, eventName);
             await producer.ProduceAsync(KafkaTopics.PaymentsEvents, message, cancellationToken);
+            
+            logger.LogInformation(
+                "Message \"{MessageValue}\" with type \"{EventType}\" produced", message.Value, eventName);
         }
         catch (ProduceException<Null, string> e)
         {
@@ -37,7 +36,20 @@ public class KafkaIntegrationEventPublisher(
         }
         catch (Exception e)
         {
-            logger.LogError("{ErrorMessage}", e.Message);
+            logger.LogCritical("{ErrorMessage}", e.Message);
         }
+    }
+
+    private static byte[] GetEventNameOrThrow<TEvent>(TEvent @event) where TEvent : IIntegrationEvent
+    {
+        const string eventNamePropName = nameof(IIntegrationEvent.EventName);
+        
+        var eventNameProp = @event.GetType().GetProperty(eventNamePropName,
+            BindingFlags.Public | BindingFlags.Static) 
+                            ?? throw new MissingMemberException($"Property \"{eventNamePropName}\" is missing");
+        var eventName = (string?)eventNameProp.GetValue(@event);
+        if (string.IsNullOrEmpty(eventName))
+            throw new MissingMemberException($"Value for property \"{eventNamePropName}\" is missing");
+        return Encoding.UTF8.GetBytes(eventName);
     }
 }
