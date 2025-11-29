@@ -1,0 +1,14 @@
+﻿services:
+  payments-api:
+    image: payments-api
+    build:
+      context: .
+      dockerfile: ./Dockerfile
+      args:
+        GITHUB_USERNAME: ${GITHUB_USERNAME}
+      secrets:
+        - github_personal_access_token
+
+secrets:
+  github_personal_access_token:
+    file: ./secrets/github_personal_access_token
