@@ -53,3 +53,7 @@ CodeCoverage/
 
 # JetBrains Rider / ReSharper user-specific settings
 *.sln.DotSettings.user
+
+# secrets
+.env
+secrets
