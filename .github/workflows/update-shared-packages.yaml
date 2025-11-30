@@ -28,24 +28,24 @@ jobs:
             --store-password-in-clear-text
 
       - name: Detect and Update Packages
-          run: |
-            NEW_VERSION="${{ github.event.client_payload.version }}"
-            echo "Target version: $NEW_VERSION"
-            
-            find . -name "*.csproj" | while read -r proj_file; do
-              echo "Processing project: $proj_file"
-              PACKAGES=$(grep -o 'Include="Shared\.[^"]*"' "$proj_file" | cut -d'"' -f2)
-            
-              if [ -z "$PACKAGES" ]; then
-                echo "  No Shared packages found."
-                continue
-              fi
-            
-              for pkg in $PACKAGES; do
-                echo "  Found dependency: $pkg. Updating to $NEW_VERSION..."
-                dotnet add "$proj_file" package "$pkg" -v "$NEW_VERSION"
-              done
+        run: |
+          NEW_VERSION="${{ github.event.client_payload.version }}"
+          echo "Target version: $NEW_VERSION"
+          
+          find . -name "*.csproj" | while read -r proj_file; do
+            echo "Processing project: $proj_file"
+            PACKAGES=$(grep -o 'Include="Shared\.[^"]*"' "$proj_file" | cut -d'"' -f2)
+          
+            if [ -z "$PACKAGES" ]; then
+              echo "  No Shared packages found."
+              continue
+            fi
+          
+            for pkg in $PACKAGES; do
+              echo "  Found dependency: $pkg. Updating to $NEW_VERSION..."
+              dotnet add "$proj_file" package "$pkg" -v "$NEW_VERSION"
             done
+          done
       
       - name: Verify Build
         run: dotnet build --configuration Release
