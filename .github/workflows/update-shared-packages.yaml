@@ -1,0 +1,68 @@
+﻿name: Update Shared Packages
+
+on:
+  repository_dispatch:
+    types: [shared-library-update]
+
+jobs:
+  update-and-merge:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      pull-requests: write
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: 9.0
+
+      - name: Authenticate NuGet
+        run: |
+          dotnet nuget add source "https://nuget.pkg.github.com/DreamFly-Airlines/index.json" \
+            --name "github" \
+            --username "DreamFly-Airlines" \
+            --password ${{ secrets.PERSONAL_ACCESS_TOKEN }} \
+            --store-password-in-clear-text
+
+      - name: Detect and Update Packages
+          run: |
+            NEW_VERSION="${{ github.event.client_payload.version }}"
+            echo "Target version: $NEW_VERSION"
+            
+            find . -name "*.csproj" | while read -r proj_file; do
+              echo "Processing project: $proj_file"
+              PACKAGES=$(grep -o 'Include="Shared\.[^"]*"' "$proj_file" | cut -d'"' -f2)
+            
+              if [ -z "$PACKAGES" ]; then
+                echo "  No Shared packages found."
+                continue
+              fi
+            
+              for pkg in $PACKAGES; do
+                echo "  Found dependency: $pkg. Updating to $NEW_VERSION..."
+                dotnet add "$proj_file" package "$pkg" -v "$NEW_VERSION"
+              done
+            done
+      
+      - name: Verify Build
+        run: dotnet build --configuration Release
+
+      - name: Create Pull Request
+        id: cpr
+        uses: peter-evans/create-pull-request@v6
+        with:
+          token: ${{ secrets.PERSONAL_ACCESS_TOKEN }}
+          commit-message: "chore: update shared packages to ${{ github.event.client_payload.version }}"
+          branch: "chore/update-shared-packages-to-${{ github.event.client_payload.version }}"
+          title: "Update Shared Packages to ${{ github.event.client_payload.version }}"
+          body: "Automated update triggered by Shared repository release."
+          delete-branch: true
+
+      - name: Auto Merge
+        if: steps.cpr.outputs.pull-request-operation == 'created'
+        run: gh pr merge --auto --merge "${{ steps.cpr.outputs.pull-request-number }}"
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
