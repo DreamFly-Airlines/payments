@@ -46,9 +46,6 @@ jobs:
               dotnet add "$proj_file" package "$pkg" -v "$NEW_VERSION"
             done
           done
-      
-      - name: Verify Build
-        run: dotnet build --configuration Release
 
       - name: Create Pull Request
         id: cpr
@@ -60,6 +57,9 @@ jobs:
           title: "Update Shared Packages to ${{ github.event.client_payload.version }}"
           body: "Automated update triggered by Shared repository release."
           delete-branch: true
+
+      - name: Verify Build
+        run: dotnet build --configuration Release
 
       - name: Auto Merge
         if: steps.cpr.outputs.pull-request-operation == 'created'
