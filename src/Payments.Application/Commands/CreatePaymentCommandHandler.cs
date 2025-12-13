@@ -1,4 +1,5 @@
 ﻿using Payments.Application.Helpers;
+using Payments.Application.Services;
 using Payments.Domain.AggregateRoots;
 using Payments.Domain.Enums;
 using Payments.Domain.Repositories;
@@ -7,11 +8,11 @@ using Shared.Abstractions.Commands;
 
 namespace Payments.Application.Commands;
 
-public class MakePaymentCommandHandler(
-    IPaymentRepository paymentRepository) : ICommandHandler<MakePaymentCommand>
+public class CreatePaymentCommandHandler(
+    IPaymentRepository paymentRepository) : ICommandHandler<CreatePaymentCommand, string>
 {
-    public async Task HandleAsync(
-        MakePaymentCommand command, 
+    public async Task<string> HandleAsync(
+        CreatePaymentCommand command, 
         CancellationToken cancellationToken = default)
     {
         var paymentId = Guid.NewGuid().ToString();
@@ -20,5 +21,6 @@ public class MakePaymentCommandHandler(
         var channel = new Channel(paymentMethod, provider);
         var payment = new Payment(command.UserId, paymentId, command.BookRef, channel, command.Amount);
         await paymentRepository.AddAsync(payment.Id, payment, cancellationToken);
+        return payment.Id;
     }
 }

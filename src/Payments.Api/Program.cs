@@ -19,8 +19,8 @@ builder.Services.AddControllers();
 builder.Services.AddExceptionHandler<GlobalExceptionHandler>();
 builder.Services.AddProblemDetails();
 builder.Services.AddNpgsql<PaymentsDbContext>(builder.Configuration.GetConnectionString("PaymentsDb"));
-builder.Services.AddCommandHandlers(typeof(MakePaymentCommand).Assembly);
-builder.Services.AddDomainEventHandlers(typeof(PaymentCreatedEventHandler).Assembly);
+builder.Services.AddCommandHandlers(typeof(CreatePaymentCommand).Assembly);
+builder.Services.AddDomainEventHandlers(typeof(PaymentConfirmedEventHandler).Assembly);
 builder.Services.AddKafkaProducers(builder.Configuration);
 
 builder.Services.AddScoped<IEventPublisher, ServiceProviderEventPublisher>();

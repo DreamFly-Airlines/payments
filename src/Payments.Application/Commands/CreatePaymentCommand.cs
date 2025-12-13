@@ -2,9 +2,9 @@
 
 namespace Payments.Application.Commands;
 
-public record MakePaymentCommand(
+public record CreatePaymentCommand(
     string UserId,
     string BookRef,
     string PaymentMethod, 
     string Provider,
-    decimal Amount) : ICommand;
+    decimal Amount) : ICommand<string>;
