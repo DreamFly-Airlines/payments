@@ -19,7 +19,8 @@ public class CreatePaymentCommandHandler(
         var paymentMethod = DataParser.TryParseEnumOrThrow<PaymentMethod>(command.PaymentMethod, "payment method");
         var provider = DataParser.TryParseEnumOrThrow<Provider>(command.Provider, "provider");
         var channel = new Channel(paymentMethod, provider);
-        var payment = new Payment(command.UserId, paymentId, command.BookRef, channel, command.Amount);
+        var total = new Money(command.Amount, Currency.FromIsoString(command.IsoCurrencyCode));
+        var payment = new Payment(command.UserId, paymentId, command.BookRef, channel, total);
         await paymentRepository.AddAsync(payment.Id, payment, cancellationToken);
         return payment.Id;
     }

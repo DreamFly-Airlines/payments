@@ -7,4 +7,5 @@ public record CreatePaymentCommand(
     string BookRef,
     string PaymentMethod, 
     string Provider,
-    decimal Amount) : ICommand<string>;
+    decimal Amount,
+    string IsoCurrencyCode) : ICommand<string>;

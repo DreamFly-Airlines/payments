@@ -28,7 +28,8 @@ public class PaymentsController(ICommandSender commandSender) : Controller
             makePaymentRequest.BookRef,
             makePaymentRequest.PaymentMethod, 
             makePaymentRequest.Provider,
-            makePaymentRequest.Amount);
+            makePaymentRequest.Amount,
+            "RUB" /* TODO: get currency from request */);
         var paymentId = await commandSender.SendAsync(command);
         return CreatedAtAction("GetPayment", new { paymentId });
     }
