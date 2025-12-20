@@ -12,10 +12,10 @@ public readonly record struct Money
         if (amount < 0)
             throw new InvalidDomainDataFormatException("Money amount should be greater than or equal to 0");
 
-        if (decimal.Round(amount, currency.MinorUnitCount) != amount)
+        if (decimal.Round(amount, currency.IsoMinorUnit) != amount)
             throw new InvalidDomainOperationException(
                 $"Amount \"{amount}\" has more decimal places than allowed for currency {currency.IsoCode}. " +
-                $"Max {currency.MinorUnitCount} decimals");
+                $"Max {currency.IsoMinorUnit} decimals");
         
         Amount = amount;
         Currency = currency;

@@ -12,12 +12,12 @@ public readonly record struct Currency
             .ToDictionary(c => c.IsoCode);
     
     public string IsoCode { get; }
-    public int MinorUnitCount { get; }
+    public int IsoMinorUnit { get; }
 
-    private Currency(string isoCode, int minorUnitCount)
+    private Currency(string isoCode, int isoMinorUnit)
     {
         IsoCode = isoCode;
-        MinorUnitCount = minorUnitCount;
+        IsoMinorUnit = isoMinorUnit;
     }
 
     public static Currency FromIsoString(string isoCode)

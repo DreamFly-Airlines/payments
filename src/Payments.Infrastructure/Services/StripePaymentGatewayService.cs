@@ -57,6 +57,6 @@ public class StripePaymentGatewayService(
         {
             Currency = money.Currency.IsoCode,
             ProductData = productData,
-            UnitAmount = (int)(money.Amount * (decimal)Math.Pow(10, money.Currency.MinorUnitCount))
+            UnitAmount = (int)(money.Amount * (decimal)Math.Pow(10, money.Currency.IsoMinorUnit))
         };
 }
