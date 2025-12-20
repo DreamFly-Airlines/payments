@@ -4,21 +4,27 @@ namespace Payments.Domain.ValueObjects;
 
 public readonly record struct Currency
 {
-    private static readonly Dictionary<string, Currency> SupportedIsoCodes = new()
+    private static readonly Dictionary<string, Currency> IsoCodeToCurrency =
+        new List<Currency> 
+            {
+                new("RUB", 2)
+            }
+            .ToDictionary(c => c.IsoCode);
+    
+    public string IsoCode { get; }
+    public int MinorUnitCount { get; }
+
+    private Currency(string isoCode, int minorUnitCount)
     {
-        [Rub.IsoCode] = Rub
-    };
-
-    public string IsoCode { get; private init; }
-    public int MinorUnitCount { get; private init; }
-
-    public static Currency Rub => new() { IsoCode = "RUB", MinorUnitCount = 2 };
+        IsoCode = isoCode;
+        MinorUnitCount = minorUnitCount;
+    }
 
     public static Currency FromIsoString(string isoCode)
     {
-        if (!SupportedIsoCodes.TryGetValue(isoCode, out var currency))
+        if (!IsoCodeToCurrency.TryGetValue(isoCode, out var currency))
             throw new InvalidDomainDataFormatException(
-                $"Unsupported iso currency code. Supported are: {string.Join(", ", SupportedIsoCodes.Keys)}");
+                $"Unsupported iso currency code. Supported are: {string.Join(", ", IsoCodeToCurrency.Keys)}");
 
         return currency;
     }
