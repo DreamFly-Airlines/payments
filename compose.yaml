@@ -6,6 +6,7 @@
       dockerfile: ./Dockerfile
       args:
         GITHUB_USERNAME: ${GITHUB_USERNAME}
+        StripeOptions: ${StripeOptions}
       secrets:
         - github_personal_access_token
 

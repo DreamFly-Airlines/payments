@@ -3,6 +3,7 @@ using Payments.Api.Extensions;
 using Payments.Application.Commands;
 using Payments.Application.EventHandlers;
 using Payments.Domain.Repositories;
+using Payments.Infrastructure.Configuration;
 using Payments.Infrastructure.Persistence;
 using Payments.Infrastructure.Producers;
 using Payments.Infrastructure.Repositories;
@@ -14,6 +15,8 @@ using Shared.Infrastructure.Commands;
 using Shared.Infrastructure.Events;
 
 var builder = WebApplication.CreateBuilder(args);
+
+builder.Services.Configure<StripeOptions>(builder.Configuration.GetSection(nameof(StripeOptions)));
 
 builder.Services.AddControllers();
 builder.Services.AddExceptionHandler<GlobalExceptionHandler>();
