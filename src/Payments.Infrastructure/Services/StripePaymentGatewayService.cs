@@ -11,7 +11,7 @@ public class StripePaymentGatewayService(
     IOptions<StripeOptions> options) : IPaymentGatewayService
 {
     private readonly string _apiKey = options.Value.ApiKey;
-        
+
     public async Task<string> ProcessPaymentAsync(
         string successUrl,
         string paymentId,
@@ -39,7 +39,7 @@ public class StripePaymentGatewayService(
             sessionCreateOptions,
             requestOptions,
             cancellationToken: cancellationToken);
-        return session.ReturnUrl;
+        return session.Url;
     }
 
     private static SessionLineItemPriceDataProductDataOptions GetProductData(string paymentId) =>
