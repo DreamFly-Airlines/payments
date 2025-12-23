@@ -1,34 +1,24 @@
-﻿using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.Options;
+﻿using DotNet.Testcontainers.Builders;
+using DotNet.Testcontainers.Containers;
 using Payments.Domain.ValueObjects;
-using Payments.Infrastructure.Configuration;
 using Payments.Infrastructure.Services;
 using Stripe;
 
 namespace Payments.Infrastructure.Tests.Integration;
 
-public class StripeTests
+public class StripeTests : IClassFixture<StripeTests.StripeContainerFixture>
 {
     private readonly IStripeClient _stripeClient;
     
-    public StripeTests()
+    public StripeTests(StripeContainerFixture fixture)
     {
-        var configuration = new ConfigurationBuilder()
-            .AddUserSecrets<StripeTests>()
-            .AddEnvironmentVariables()
-            .Build();
-        
-        var apiKey = configuration[$"{nameof(StripeOptions)}:{nameof(StripeOptions.ApiKey)}"];
-        Skip.If(string.IsNullOrEmpty(apiKey),
-            "Test Stripe API Key is missing in configuration");
-        const string stripeTestApiKeyStart = "sk_test_";
-        Skip.If(!apiKey.StartsWith(stripeTestApiKeyStart),
-            $"Test Stripe API Key should start with \"{stripeTestApiKeyStart}\"");
-        
-        _stripeClient = new StripeClient(apiKey);
+        const string apiKey = "sk_test_mock";
+        _stripeClient = new StripeClient(
+            apiKey: apiKey,
+            apiBase: fixture.ApiBaseUrl);
     }
     
-    [SkippableFact]
+    [Fact]
     public async Task ProcessPaymentAsync_WhenDataIsValid_ReturnsUrl()
     {
         var stripeGateway = new StripePaymentGatewayService(_stripeClient);
@@ -39,6 +29,31 @@ public class StripeTests
             new Money(100.00m, Currency.FromIsoString("RUB")));
         
         Assert.NotNull(url);
-        Assert.StartsWith("https://checkout.stripe.com/c/pay/cs_test_", url);
+        Assert.StartsWith("https://checkout.stripe.com", url);
+    }
+    
+    public class StripeContainerFixture : IAsyncLifetime
+    {
+        private readonly IContainer _stripeContainer;
+        private const int InternalContainerPort = 12111;
+
+        public string ApiBaseUrl =>
+            $"http://{_stripeContainer.Hostname}:{_stripeContainer.GetMappedPublicPort(InternalContainerPort)}";
+
+
+        public StripeContainerFixture()
+        {
+            _stripeContainer = new ContainerBuilder()
+                .WithImage("stripe/stripe-mock:v0.197.0")
+                .WithPortBinding(InternalContainerPort, true)
+                .WithWaitStrategy(Wait
+                    .ForUnixContainer()
+                    .UntilInternalTcpPortIsAvailable(InternalContainerPort))
+                .Build();
+        }
+    
+        public async Task InitializeAsync() => await _stripeContainer.StartAsync();
+
+        public async Task DisposeAsync() => await _stripeContainer.StopAsync();
     }
 }
