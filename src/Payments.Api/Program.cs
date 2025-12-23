@@ -13,6 +13,7 @@ using Shared.Abstractions.IntegrationEvents;
 using Shared.Extensions.ServiceCollection;
 using Shared.Infrastructure.Commands;
 using Shared.Infrastructure.Events;
+using Stripe;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -21,6 +22,7 @@ builder.Services.Configure<StripeOptions>(builder.Configuration.GetSection(nameo
 builder.Services.AddControllers();
 builder.Services.AddExceptionHandler<GlobalExceptionHandler>();
 builder.Services.AddProblemDetails();
+builder.Services.AddSingleton<IStripeClient>(_ => new StripeClient(builder.Configuration["Stripe:ApiKey"]));
 builder.Services.AddNpgsql<PaymentsDbContext>(builder.Configuration.GetConnectionString("PaymentsDb"));
 builder.Services.AddCommandHandlers(typeof(CreatePaymentCommand).Assembly);
 builder.Services.AddDomainEventHandlers(typeof(PaymentConfirmedEventHandler).Assembly);

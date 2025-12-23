@@ -3,13 +3,14 @@ using Microsoft.Extensions.Options;
 using Payments.Domain.ValueObjects;
 using Payments.Infrastructure.Configuration;
 using Payments.Infrastructure.Services;
+using Stripe;
 
 namespace Payments.Infrastructure.Tests.Integration;
 
 public class StripeTests
 {
-    private readonly IOptions<StripeOptions> _stripeOptions;
-
+    private readonly IStripeClient _stripeClient;
+    
     public StripeTests()
     {
         var configuration = new ConfigurationBuilder()
@@ -24,14 +25,13 @@ public class StripeTests
         Skip.If(!apiKey.StartsWith(stripeTestApiKeyStart),
             $"Test Stripe API Key should start with \"{stripeTestApiKeyStart}\"");
         
-        var options = new StripeOptions(apiKey);
-        _stripeOptions = Options.Create(options);
+        _stripeClient = new StripeClient(apiKey);
     }
     
     [SkippableFact]
     public async Task ProcessPaymentAsync_WhenDataIsValid_ReturnsUrl()
     {
-        var stripeGateway = new StripePaymentGatewayService(_stripeOptions);
+        var stripeGateway = new StripePaymentGatewayService(_stripeClient);
         
         var url = await stripeGateway.ProcessPaymentAsync(
             "https://example.com/success", 
